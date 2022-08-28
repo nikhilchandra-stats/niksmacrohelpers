@@ -27,7 +27,7 @@ GDP_dat <-
     variables = "QNA",
     countries = country_abbrevs,
     start_time = 2006,
-    endtime = 2022,
+    end_time = 2022,
     remove_abbrev_cols = TRUE
   )
 

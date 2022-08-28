@@ -4,7 +4,7 @@
 #' @return (tibble) Returns detailed monthly trade data for Australia.
 #' @export
 #'
-#' @examples \dontrun {
+#' @examples \dontrun{
 #'
 #' dat <- get_trade_DFAT_monthly()
 #'
@@ -28,7 +28,7 @@ get_trade_DFAT_monthly <- function(){
 #' @return (tibble) Returns detailed yearly trade data for Australia.
 #' @export
 #'
-#' @examples \dontrun {
+#' @examples \dontrun{
 #'
 #' dat <- get_trade_DFAT_yearly()
 #'

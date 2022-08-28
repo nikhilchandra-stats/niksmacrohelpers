@@ -15,7 +15,7 @@ This function obtains a local copy of DFAT Australian monthly trade data by
 country and type of trade good.
 }
 \examples{
-\dontrun {
+\dontrun{
 
 dat <- get_trade_DFAT_monthly()
 

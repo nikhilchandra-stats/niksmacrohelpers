@@ -10,7 +10,7 @@ get_oecd_gdp_live(
   countries = c("CHN", "USA", "GBR", "OECD", "G-7", "EU27_2020", "JPN", "ITA", "AUS",
     "CAN", "FRA", "DEU", "NZL", "NLD", "KOR", "IDN", "CHE"),
   start_time = 2006,
-  endtime = 2022,
+  end_time = 2022,
   remove_abbrev_cols = TRUE
 )
 }
@@ -26,7 +26,7 @@ to get the different abbreviations and associated country names.}
 \item{start_time}{(numeric) The earliest year you want to go back to. The
 function will attempt to go back as far as it can for the countries chosen.}
 
-\item{endtime}{(numeric) Latest date you wish to extract data for.}
+\item{end_time}{(numeric) Latest date you wish to extract data for.}
 
 \item{remove_abbrev_cols}{(Boolean; TRUE) Will remove unncessary abbreviation
 columns if set to TRUE.}
@@ -50,7 +50,7 @@ GDP_dat <-
     variables = "QNA",
     countries = country_abbrevs,
     start_time = 2006,
-    endtime = 2022,
+    end_time = 2022,
     remove_abbrev_cols = TRUE
   )
 

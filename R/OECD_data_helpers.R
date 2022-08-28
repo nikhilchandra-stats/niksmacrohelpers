@@ -15,7 +15,7 @@
 #'     variables = "QNA",
 #'     countries = country_abbrevs,
 #'     start_time = 2006,
-#'     endtime = 2022,
+#'     end_time = 2022,
 #'     remove_abbrev_cols = TRUE
 #'   )
 #'
@@ -41,7 +41,7 @@ get_oecd_country_abbrevs <- function(){
 #' to get the different abbreviations and associated country names.
 #' @param start_time (numeric) The earliest year you want to go back to. The
 #' function will attempt to go back as far as it can for the countries chosen.
-#' @param endtime (numeric) Latest date you wish to extract data for.
+#' @param end_time (numeric) Latest date you wish to extract data for.
 #' @param remove_abbrev_cols (Boolean; TRUE) Will remove unncessary abbreviation
 #' columns if set to TRUE.
 #'
@@ -59,7 +59,7 @@ get_oecd_country_abbrevs <- function(){
 #'     variables = "QNA",
 #'     countries = country_abbrevs,
 #'     start_time = 2006,
-#'     endtime = 2022,
+#'     end_time = 2022,
 #'     remove_abbrev_cols = TRUE
 #'   )
 #'
@@ -69,7 +69,7 @@ get_oecd_gdp_live <- function(
   countries = c("CHN", "USA", "GBR", "OECD", "G-7",
                 "EU27_2020", "JPN", "ITA", "AUS", "CAN", "FRA", "DEU", "NZL", "NLD", "KOR", "IDN", "CHE"),
   start_time = 2006,
-  endtime = 2022,
+  end_time = 2022,
   remove_abbrev_cols = TRUE
 ){
 
@@ -137,7 +137,7 @@ get_oecd_gdp_live <- function(
     )
 
   if(remove_abbrev_cols){
-    GDP_dat_filter <-
+    GDP_dat_filter <- GDP_dat_filter %>%
       dplyr::select(-.data$MEASURE, -.data$UNIT,
                     -.data$SUBJECT, -.data$obsTime,
                     -.data$OBS_STATUS)
@@ -158,7 +158,7 @@ get_oecd_gdp_live <- function(
 #' to get the different abbreviations and associated country names.
 #' @param start_time (numeric) The earliest year you want to go back to. The
 #' function will attempt to go back as far as it can for the countries chosen.
-#' @param endtime (numeric) Latest date you wish to extract data for.
+#' @param end_time (numeric) Latest date you wish to extract data for.
 #' @param remove_abbrev_cols (Boolean; TRUE) Will remove unnecessary abbreviation
 #' columns if set to TRUE.
 #'
@@ -176,7 +176,7 @@ get_oecd_gdp_live <- function(
 #'     variables = "PRICES_CPI",
 #'     countries = country_abbrevs,
 #'     start_time = 2006,
-#'     endtime = 2022,
+#'     end_time = 2022,
 #'     remove_abbrev_cols = TRUE
 #'   )
 #'
@@ -185,7 +185,8 @@ get_oecd_CPI_live <- function( variables = "PRICES_CPI",
                           countries = c("CHN", "USA", "GBR", "OECD", "G-7",
                                         "EU27_2020", "JPN", "ITA", "AUS", "CAN", "FRA", "DEU", "NZL", "NLD", "KOR", "IDN", "CHE"),
                           start_time = 2006,
-                          endtime = 2022
+                          end_time = 2022,
+                          remove_abbrev_cols = TRUE
 ){
 
   dstruc <- OECD::get_data_structure(variables)
@@ -197,16 +198,16 @@ get_oecd_CPI_live <- function( variables = "PRICES_CPI",
                   var_description = .data$label)
 
   unit_details <- dstruc$UNIT %>%
-    dplyr::rename(UNIT = id,
-                  unit_desc = label)
+    dplyr::rename(UNIT = .data$id,
+                  unit_desc = .data$label)
 
   measure_details <- dstruc$MEASURE %>%
-    dplyr::rename(MEASURE = id,
-                  measure_name = label)
+    dplyr::rename(MEASURE = .data$id,
+                  measure_name = .data$label)
 
   full_country <- dstruc$LOCATION %>%
-    dplyr::rename(LOCATION = id,
-                  country = label)
+    dplyr::rename(LOCATION = .data$id,
+                  country = .data$label)
 
   time_info <- dstruc$TIME_FORMAT %>%
     dplyr::rename(TIME_FORMAT = .data$id,
@@ -251,10 +252,9 @@ get_oecd_CPI_live <- function( variables = "PRICES_CPI",
     )
 
   if(remove_abbrev_cols){
-    cpi_filter <-
+    cpi_filter <- cpi_filter %>%
       dplyr::select(-.data$MEASURE, -.data$UNIT,
-                    -.data$SUBJECT, -.data$obsTime,
-                    -.data$OBS_STATUS)
+                    -.data$SUBJECT, -.data$obsTime)
   }
 
   return(cpi_filter)

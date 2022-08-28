@@ -14,7 +14,10 @@ Imports:
     dplyr, 
     OECD, 
     stringr, 
-    readr
+    readr, 
+    lubridate, 
+    tidyr, 
+    glue
 Suggests: 
     roxygen2,
     spelling,
