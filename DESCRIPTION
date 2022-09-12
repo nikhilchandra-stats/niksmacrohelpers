@@ -17,7 +17,9 @@ Imports:
     readr, 
     lubridate, 
     tidyr, 
-    glue
+    glue, 
+    jsonite,
+    httr
 Suggests: 
     roxygen2,
     spelling,
