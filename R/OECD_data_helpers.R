@@ -276,9 +276,103 @@ get_oecd_CPI_live <- function( variables = "PRICES_CPI",
 #' dat <- get_oecd_GDP_local()
 #'
 #' }
-get_oecd_GDP_local <- function(){
+get_oecd_GDP_local <- function(
+
+){
 
   dat <- readr::read_csv("https://raw.githubusercontent.com/nikhilchandra-stats/macrodatasetsraw/master/data/OECD_GDP_data.csv")
   return(dat)
+
+}
+
+#' Title
+#'
+#' @param variables
+#' @param countries
+#' @param start_time
+#' @param end_time
+#' @param remove_abbrev_cols
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get_oecd_labour_force_live <- function(
+  variables = "DP_LIVE",
+  countries = c("CHN", "USA", "GBR", "OECD", "G-7",
+                "EU27_2020", "JPN", "ITA", "AUS", "CAN", "FRA", "DEU", "NZL", "NLD", "KOR", "IDN", "CHE"),
+  start_time = 2006,
+  end_time = 2022,
+  remove_abbrev_cols = TRUE
+){
+
+  dstruc <- OECD::get_data_structure(variables)
+
+  country_list <- dstruc$LOCATION
+
+  measure_details <- dstruc$MEASURE %>%
+    dplyr::rename(MEASURE = .data$id,
+                  unit_desc = .data$label)
+
+  series_details <- dstruc$SUBJECT %>%
+    dplyr::rename(SUBJECT = .data$id,
+                  subject_desc = .data$label)
+
+  indicator_details <- dstruc$INDICATOR %>%
+    dplyr::rename(INDICATOR = .data$id,
+                  indicator_desc = .data$label)
+
+  full_country <- dstruc$LOCATION %>%
+    dplyr::rename(LOCATION = .data$id,
+                  country = .data$label)
+
+  time_info <- dstruc$TIME_FORMAT %>%
+    dplyr::rename(TIME_FORMAT = .data$id,
+                  time_details = .data$label)
+
+  LFS_dat <- OECD::get_dataset(dataset = variables,
+                               filter = list(countries),
+                               start_time = start_time,
+                               endtime = end_time)
+
+  LFS_filter <- LFS_dat %>%
+    dplyr::mutate(year = stringr::str_extract(.data$obsTime,"[0-9][0-9][0-9][0-9]")) %>%
+    dplyr::mutate(quarter_date =
+                    dplyr::case_when(
+                      stringr::str_detect(.data$obsTime,"Q1") ~ glue::glue("{year}-03-01"),
+                      stringr::str_detect(.data$obsTime,"Q2") ~ glue::glue("{year}-06-01"),
+                      stringr::str_detect(.data$obsTime,"Q3") ~ glue::glue("{year}-09-01"),
+                      stringr::str_detect(.data$obsTime,"Q4") ~ glue::glue("{year}-12-01")
+                    )
+    ) %>%
+    dplyr::mutate(
+      date = lubridate::as_date(.data$obsTime)
+    ) %>%
+    dplyr::left_join(
+      sex_info, by = "SEX"
+    ) %>%
+    dplyr::left_join(
+      full_country, by = "LOCATION"
+    ) %>%
+    dplyr::left_join(
+      time_info, by = "TIME_FORMAT"
+    )  %>%
+    dplyr::left_join(
+      series_details, by = "SUBJECT"
+    )  %>%
+    dplyr::mutate(
+      date = ifelse(!is.na(.data$quarter_date) & is.na(.data$date),
+                    .data$quarter_date, .data$date)
+    )
+
+  if(remove_abbrev_cols){
+    cpi_filter <- cpi_filter %>%
+      dplyr::select(-.data$MEASURE, -.data$UNIT,
+                    -.data$SUBJECT, -.data$obsTime)
+  }
+
+  return(cpi_filter)
+
+
 
 }
