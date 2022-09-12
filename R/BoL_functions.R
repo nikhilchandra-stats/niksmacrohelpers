@@ -1,4 +1,16 @@
-make_bls_query <- function(url = "https://api.bls.gov/publicAPI/v2/timeseries/data/",
+#' This function will retrieve data based on the provided seriesid, start year
+#' and end year variables.
+#'
+#' @param url
+#' @param seriesid
+#' @param startyear
+#' @param endyear
+#'
+#' @return
+#' @export
+#'
+#' @examples
+make_bls_query <- function(url = "https://api.bls.gov/publicAPI/v1/timeseries/data/",
                            seriesid = c('CES0000000001'),
                            startyear = '2010',
                            endyear = '2020'){
