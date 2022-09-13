@@ -22,7 +22,7 @@
 #' }
 get_oecd_country_abbrevs <- function(){
 
-  dstruc <- OECD::get_oecd_data_structure("QNA")
+  dstruc <- get_oecd_data_structure("QNA")
 
   country_tibble <- dstruc$LOCATION
 
@@ -73,7 +73,7 @@ get_oecd_gdp_live <- function(
   remove_abbrev_cols = TRUE
 ){
 
-  dstruc <- OECD::get_oecd_data_structure(variables)
+  dstruc <- get_oecd_data_structure(variables)
 
   country_list <- dstruc$LOCATION
 
@@ -189,7 +189,7 @@ get_oecd_CPI_live <- function( variables = "PRICES_CPI",
                           remove_abbrev_cols = TRUE
 ){
 
-  dstruc <- OECD::get_oecd_data_structure(variables)
+  dstruc <- get_oecd_data_structure(variables)
 
   country_list <- dstruc$LOCATION
 
@@ -306,7 +306,7 @@ get_oecd_labour_force_live <- function(
   remove_abbrev_cols = TRUE
 ){
 
-  dstruc <- OECD::get_oecd_data_structure(variables)
+  dstruc <- get_oecd_data_structure(variables)
 
   country_list <- dstruc$LOCATION
 
