@@ -19,7 +19,9 @@ Imports:
     tidyr, 
     glue, 
     jsonlite,
-    httr
+    httr, 
+    rsdmx, 
+    purrr
 Suggests: 
     roxygen2,
     spelling,
