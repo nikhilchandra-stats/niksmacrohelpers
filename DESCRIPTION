@@ -21,7 +21,8 @@ Imports:
     rsdmx,
     stringr,
     tibble,
-    tidyr
+    tidyr, 
+    lubridate
 Suggests: 
     roxygen2,
     spelling,

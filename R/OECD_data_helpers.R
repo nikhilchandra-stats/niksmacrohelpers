@@ -285,7 +285,8 @@ get_oecd_GDP_local <- function(
 
 }
 
-#' Title
+#' This function extracts various data sets from the OECD category "DP_LIVE.
+#'
 #'
 #' @param variables
 #' @param countries
