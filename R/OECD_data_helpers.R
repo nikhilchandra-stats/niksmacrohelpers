@@ -285,7 +285,7 @@ get_oecd_GDP_local <- function(
 
 }
 
-#' Title
+#' This function retrieves Labour
 #'
 #' @param variables
 #' @param countries
@@ -312,7 +312,7 @@ get_oecd_labour_force_live <- function(
 
   measure_details <- dstruc$MEASURE %>%
     dplyr::rename(MEASURE = .data$id,
-                  unit_desc = .data$label)
+                  measure_desc = .data$label)
 
   series_details <- dstruc$SUBJECT %>%
     dplyr::rename(SUBJECT = .data$id,
@@ -329,6 +329,10 @@ get_oecd_labour_force_live <- function(
   time_info <- dstruc$TIME_FORMAT %>%
     dplyr::rename(TIME_FORMAT = .data$id,
                   time_details = .data$label)
+
+  frequency_info <- dstruc$FREQUENCY %>%
+    dplyr::rename(FREQUENCY = .data$id,
+                  frequency = .data$label)
 
   LFS_dat <- OECD::get_dataset(dataset = variables,
                                filter = list(countries),
@@ -349,9 +353,6 @@ get_oecd_labour_force_live <- function(
       date = lubridate::as_date(.data$Time)
     ) %>%
     dplyr::left_join(
-      sex_info, by = "SEX"
-    ) %>%
-    dplyr::left_join(
       full_country, by = "LOCATION"
     ) %>%
     dplyr::left_join(
@@ -360,15 +361,25 @@ get_oecd_labour_force_live <- function(
     dplyr::left_join(
       series_details, by = "SUBJECT"
     )  %>%
+    dplyr::left_join(
+      indicator_details, by = "INDICATOR"
+    ) %>%
+    dplyr::left_join(
+      measure_details, by = "MEASURE"
+    ) %>%
+    dplyr::left_join(
+      frequency_info, by = "FREQUENCY"
+    ) %>%
     dplyr::mutate(
       date = ifelse(!is.na(.data$quarter_date) & is.na(.data$date),
                     .data$quarter_date, .data$date)
     )
 
   if(remove_abbrev_cols){
-    cpi_filter <- cpi_filter %>%
-      dplyr::select(-.data$MEASURE, -.data$UNIT,
-                    -.data$SUBJECT, -.data$Time)
+    LFS_filter <- LFS_filter %>%
+      dplyr::select(-.data$MEASURE, -.data$TIME_FORMAT, -.data$INDICATOR,
+                    -.data$SUBJECT, -.data$Time,
+                    -.data$FREQUENCY)
   }
 
   return(cpi_filter)
