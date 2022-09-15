@@ -12,8 +12,7 @@ get_oecd_GDP_local()
 (tibble) A tibble containing all country abbreviations and names.
 }
 \description{
-This function draws in a local copy of the data set for speed. Update the
-function for updated local copies of the data.
+This function draws in a local copy of the data set for speed.
 }
 \examples{
 \dontrun{

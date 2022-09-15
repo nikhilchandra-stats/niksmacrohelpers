@@ -3,7 +3,8 @@
 \name{get_oecd_CPI_live}
 \alias{get_oecd_CPI_live}
 \title{This function will use the package \code{OECD} to extract CPI data for select
-countries. This returns a tibble of various reported CPI data.}
+countries. This returns a tibble of detailed CPI data which has been
+harmonized by the OECD to enable like for like comparisons.}
 \usage{
 get_oecd_CPI_live(
   variables = "PRICES_CPI",
@@ -37,7 +38,8 @@ specified table.
 }
 \description{
 This function will use the package \code{OECD} to extract CPI data for select
-countries. This returns a tibble of various reported CPI data.
+countries. This returns a tibble of detailed CPI data which has been
+harmonized by the OECD to enable like for like comparisons.
 }
 \examples{
 \dontrun{

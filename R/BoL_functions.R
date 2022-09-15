@@ -49,56 +49,192 @@ return(dat)
 
 }
 
-#' This function will retrieve Total Non-Farm Employment data from BLS starting
-#' from 2000 to the current year.
+#' This function will retrieve stack multiple v1 queries together to
+#' get data starting from the year 2000. This is required because of the
+#' limited nature of the v1 API. Querying any 'popular series'
+#' is limited to 10 years using the v1 API.
 #'
-#' @return (tibble) Returns a data frame of non-farm employment numbers.
+#' @param series (character) The series ID of the data you wish to retrieve.
+#' https://data.bls.gov/cgi-bin/surveymost?bls to find out what seriesid's are
+#' available for use with this function and what data sets they retrieve from BLS.
+#'
+#' @return (tibble) Returns a data frame
 #' @export
 #'
-#' @examples
-get_bls_total_non_farm_emp <- function(){
+#' @examples \dontrun{
+#'
+#' get_bls_2000_to_now(series = 'CES0000000001')
+#'
+#' }
+get_bls_2000_to_now<- function(series){
 
   dat1 <- make_bls_query(
     url = "https://api.bls.gov/publicAPI/v1/timeseries/data/",
-    seriesid = c('CES0000000001'),
+    seriesid = series,
     startyear = '2000',
     endyear = '2005'
   )
 
-  Sys.sleep(0.25)
+  Sys.sleep(0.1)
 
   dat2 <- make_bls_query(
     url = "https://api.bls.gov/publicAPI/v1/timeseries/data/",
-    seriesid = c('CES0000000001'),
+    seriesid = series,
     startyear = '2006',
     endyear = '2010'
   )
 
-  Sys.sleep(0.25)
+  Sys.sleep(0.1)
 
   dat3 <- make_bls_query(
     url = "https://api.bls.gov/publicAPI/v1/timeseries/data/",
-    seriesid = c('CES0000000001'),
+    seriesid = series,
     startyear = '2011',
     endyear = '2015'
   )
 
-  Sys.sleep(0.25)
+  Sys.sleep(0.1)
 
   current_year <- lubridate::year(lubridate::today()) %>% as.character()
 
   dat4 <- make_bls_query(
     url = "https://api.bls.gov/publicAPI/v1/timeseries/data/",
-    seriesid = c('CES0000000001'),
+    seriesid = series,
     startyear = '2016',
+    endyear = '2020'
+  )
+
+  Sys.sleep(0.1)
+
+  dat5 <- make_bls_query(
+    url = "https://api.bls.gov/publicAPI/v1/timeseries/data/",
+    seriesid = series,
+    startyear = '2020',
     endyear = current_year
   )
 
   returned_data <- dat1 %>%
     dplyr::bind_rows(dat2) %>%
     dplyr::bind_rows(dat3) %>%
-    dplyr::bind_rows(dat4)
+    dplyr::bind_rows(dat4) %>%
+    dplyr::bind_rows(dat5)
 
  return(returned_data)
+
+}
+
+#' This function will retrieve Labour Force Seasonally adjusted data from BLS
+#' starting from 2000 to the current year.
+#'
+#' @return (tibble) Returns a data frame
+#' @export
+#'
+#' @examples \dontrun{
+#'
+#' dat <- get_bls_total_LF()
+#'
+#' }
+get_bls_total_LF <- function(){
+
+  dat <- get_bls_2000_to_now("LNS11000000")
+
+  return(dat)
+
+}
+
+#' This function will retrieve Civilian Employment Seasonally adjusted data from BLS
+#' starting from 2000 to the current year.
+#'
+#' @return (tibble) Returns a data frame
+#' @export
+#'
+#' @examples \dontrun{
+#'
+#' dat <- get_bls_total_civ_emp()
+#'
+#' }
+get_bls_total_civ_emp <- function(){
+
+  dat <- get_bls_2000_to_now("LNS12000000")
+
+  return(dat)
+
+}
+
+#' This function will retrieve Civilian Unemployment Seasonally adjusted data from BLS
+#' starting from 2000 to the current year.
+#'
+#' @return (tibble) Returns a data frame
+#' @export
+#'
+#' @examples \dontrun{
+#'
+#' dat <- get_bls_total_civ_unemp()
+#'
+#' }
+get_bls_total_civ_unemp <- function(){
+
+  dat <- get_bls_2000_to_now("LNS14000000")
+
+  return(dat)
+
+}
+
+#' This function will retrieve Private average weekly hours Seasonally adjusted
+#' data from BLS starting from 2000 to the current year.
+#'
+#' @return (tibble) Returns a data frame
+#' @export
+#'
+#' @examples \dontrun{
+#'
+#' dat <- get_bls_total_avg_wkly_hours()
+#'
+#' }
+get_bls_total_avg_wkly_hours <- function(){
+
+  dat <- get_bls_2000_to_now("CES0500000002")
+
+  return(dat)
+
+}
+
+#' This function will retrieve Total Private Average Weekly Hours of Prod.
+#' and Nonsup. Employees - Seasonally Adjusted - CES0500000007 data from BLS
+#' starting from 2000 to the current year.
+#'
+#' @return (tibble) Returns a data frame
+#' @export
+#'
+#' @examples \dontrun{
+#'
+#' dat <- get_bls_total_LF()
+#'
+#' }
+get_bls_total_avg_wkly_hours_of_prod <- function(){
+
+  dat <- get_bls_2000_to_now("CES0500000007")
+
+  return(dat)
+
+}
+
+#' This function will retrieve Total Private Average Hourly Earnings of All Employees
+#' - Seasonally Adjusted - CES0500000003 data from BLS starting from 2000 to
+#' the current year.
+#'
+#' @return (tibble) Returns a data frame
+#' @export
+#'
+#' @examples \dontrun{
+#'
+#' dat <- get_bls_total_avg_wkly_hrly_earnings()
+#'
+#' }
+get_bls_total_avg_wkly_hrly_earnings <- function(){
+
+  dat <- get_bls_2000_to_now("CES0500000003")
+
+  return(dat)
 
 }

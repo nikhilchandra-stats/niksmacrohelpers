@@ -4,12 +4,12 @@
 \name{niksmacrohelpers-package}
 \alias{niksmacrohelpers}
 \alias{niksmacrohelpers-package}
-\title{niksmacrohelpers: What the Package Does (One Line, Title Case)}
+\title{niksmacrohelpers: Provides Users Free Macroeconomic and Financial Data}
 \description{
 What the package does (one paragraph).
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com} (\href{https://orcid.org/YOUR-ORCID-ID}{ORCID})
+\strong{Maintainer}: Nikhil Chandra \email{first.last@example.com} (\href{https://orcid.org/YOUR-ORCID-ID}{ORCID})
 
 }
 \keyword{internal}

@@ -3,19 +3,53 @@
 \name{make_bls_query}
 \alias{make_bls_query}
 \title{This function will retrieve data based on the provided seriesid, start year
-and end year input variables.}
+and end year variables from the public BLS API. To find the seriesid for the
+data you wish to query find the appropriate seriesid here:
+https://data.bls.gov/cgi-bin/surveymost?bls
+Other seriesid can be found on the BLS website by seraching through different
+data topics. Please note that the v1 API is limited and some larger data
+sources might not be possible to retrieve with this API.}
 \usage{
 make_bls_query(
   url = "https://api.bls.gov/publicAPI/v1/timeseries/data/",
-  seriesid = "CES0000000001",
+  seriesid = c("CES0000000001"),
   startyear = "2010",
   endyear = "2020"
 )
 }
 \arguments{
-\item{endyear}{}
+\item{url}{(character; "https://api.bls.gov/publicAPI/v1/timeseries/data/")
+Change v1 to v2 if you have an API key that you can use to access the data.}
+
+\item{seriesid}{(character) The series ID of the data you wish to retrieve.}
+
+\item{startyear}{(character) The starting year for the data you want to
+retrieve.}
+
+\item{endyear}{(character) The ending year for the data you want to
+retrieve.}
+}
+\value{
+(tibble) Returns a tibble of the data you queried.
 }
 \description{
 This function will retrieve data based on the provided seriesid, start year
-and end year input variables.
+and end year variables from the public BLS API. To find the seriesid for the
+data you wish to query find the appropriate seriesid here:
+https://data.bls.gov/cgi-bin/surveymost?bls
+Other seriesid can be found on the BLS website by seraching through different
+data topics. Please note that the v1 API is limited and some larger data
+sources might not be possible to retrieve with this API.
+}
+\examples{
+\dontrun{
+
+dat <- make_bls_query(
+   url = "https://api.bls.gov/publicAPI/v1/timeseries/data/",
+   seriesid = c('CES0000000001'),
+   startyear = 2010,
+   endyear = 2019
+)
+
+}
 }

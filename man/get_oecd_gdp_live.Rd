@@ -3,7 +3,8 @@
 \name{get_oecd_gdp_live}
 \alias{get_oecd_gdp_live}
 \title{This function will use the package \code{OECD} to extract GDP data for select
-countries. This returns a tibble of various reported GDP data.}
+countries. This returns a tibble of all detailed GDP data which has been
+harmonized the OECD for allow for country to country comparisons.}
 \usage{
 get_oecd_gdp_live(
   variables = "QNA",
@@ -37,7 +38,8 @@ specified table.
 }
 \description{
 This function will use the package \code{OECD} to extract GDP data for select
-countries. This returns a tibble of various reported GDP data.
+countries. This returns a tibble of all detailed GDP data which has been
+harmonized the OECD for allow for country to country comparisons.
 }
 \examples{
 \dontrun{

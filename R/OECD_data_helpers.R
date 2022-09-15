@@ -1,4 +1,4 @@
-#' This function will return a tibble containg country and names and abbrevations
+#' This function will return a tibble containing country and names and abbreviations
 #' used in the OECD database. The other OECD get functions require country
 #' abbreviations to be provided as an input.
 #'
@@ -22,7 +22,7 @@
 #' }
 get_oecd_country_abbrevs <- function(){
 
-  dstruc <- get_oecd_data_structure("QNA")
+  dstruc <- suppressMessages(get_dstrucs("QNA"))
 
   country_tibble <- dstruc$LOCATION
 
@@ -31,7 +31,8 @@ get_oecd_country_abbrevs <- function(){
 }
 
 #' This function will use the package `OECD` to extract GDP data for select
-#' countries. This returns a tibble of various reported GDP data.
+#' countries. This returns a tibble of all detailed GDP data which has been
+#' harmonized the OECD for allow for country to country comparisons.
 #'
 #' @param variables (character; "QNA") This variables which database table the
 #' function will extract data from. The default is "QNA" which is the quarterly
@@ -73,7 +74,7 @@ get_oecd_gdp_live <- function(
   remove_abbrev_cols = TRUE
 ){
 
-  dstruc <- get_oecd_data_structure(variables)
+  dstruc <- suppressMessages(get_dstrucs(variables))
 
   country_list <- dstruc$LOCATION
 
@@ -100,7 +101,8 @@ get_oecd_gdp_live <- function(
   GDP_dat <- OECD::get_dataset(dataset = variables,
                                filter = list(countries),
                                start_time = start_time,
-                               endtime = end_time)
+                               endtime = end_time) %>%
+    oecd_rename_obsTime()
 
 
   GDP_dat_filter <- GDP_dat %>%
@@ -148,7 +150,8 @@ get_oecd_gdp_live <- function(
 }
 
 #' This function will use the package `OECD` to extract CPI data for select
-#' countries. This returns a tibble of various reported CPI data.
+#' countries. This returns a tibble of detailed CPI data which has been
+#' harmonized by the OECD to enable like for like comparisons.
 #'
 #' @param variables (character; "PRICES_CPI") This variables which database table the
 #' function will extract data from. The default is "PRICES_CPI" which is the
@@ -189,7 +192,7 @@ get_oecd_CPI_live <- function( variables = "PRICES_CPI",
                           remove_abbrev_cols = TRUE
 ){
 
-  dstruc <- get_oecd_data_structure(variables)
+  dstruc <- suppressMessages(get_dstrucs(variables))
 
   country_list <- dstruc$LOCATION
 
@@ -216,7 +219,8 @@ get_oecd_CPI_live <- function( variables = "PRICES_CPI",
   CPI_dat <- OECD::get_dataset(dataset = variables,
                                filter = list(countries),
                                start_time = start_time,
-                               endtime = end_time)
+                               endtime = end_time) %>%
+    oecd_rename_obsTime()
 
   cpi_filter <- CPI_dat %>%
     dplyr::mutate(year = stringr::str_extract(.data$Time,"[0-9][0-9][0-9][0-9]")) %>%
@@ -265,8 +269,7 @@ get_oecd_CPI_live <- function( variables = "PRICES_CPI",
 #' abbreviations used in the OECD database. The other OECD get functions
 #' require country abbreviations to be provided as an input.
 #'
-#' This function draws in a local copy of the data set for speed. Update the
-#' function for updated local copies of the data.
+#' This function draws in a local copy of the data set for speed.
 #'
 #' @return (tibble) A tibble containing all country abbreviations and names.
 #' @export
@@ -286,29 +289,50 @@ get_oecd_GDP_local <- function(
 }
 
 
-#' This function extracts various data sets from the OECD category "DP_LIVE.
+#' This function extracts relevant Employment data from the OECD using
+#' "DP_LIVE" table. This function will return the following:
 #'
+#' G_EMP: Employment
+#' EMP: Employment Rate
+#' LF: Labour force
+#' G_UNEMP: Unemployment
+#' HUR: Unemployment rate
+#' LTUNEMP: Long-term unemployment rate
 #'
-#' @param variables
-#' @param countries
-#' @param start_time
-#' @param end_time
-#' @param remove_abbrev_cols
+#' @param variables (character; "DP_LIVE") This variables which database table the
+#' function will extract data from. The default is "DP_LIVE" which is the
+#' the data table where labour force data is kept.
+#' @param countries (character) Country abbreviations used by the function to
+#' determine which countries will be extracted. Use `get_oecd_country_abbrevs`
+#' to get the different abbreviations and associated country names.
+#' @param start_time (numeric) The earliest year you want to go back to. The
+#' function will attempt to go back as far as it can for the countries chosen.
+#' @param end_time (numeric) Latest date you wish to extract data for.
+#' @param remove_abbrev_cols (Boolean; TRUE) Will remove unnecessary abbreviation
+#' columns if set to TRUE.
 #'
-#' @return
+#' @return (tibble)
 #' @export
 #'
-#' @examples
+#' @examples \dontrun{
+#'
+#' dat <- get_oecd_labour_force_live(
+#' countries = c("USA"),
+#' start_time = 2020,
+#' end_time = 2022
+#' )
+#'
+#' }
 get_oecd_labour_force_live <- function(
   variables = "DP_LIVE",
   countries = c("CHN", "USA", "GBR", "OECD", "G-7",
                 "EU27_2020", "JPN", "ITA", "AUS", "CAN", "FRA", "DEU", "NZL", "NLD", "KOR", "IDN", "CHE"),
-  start_time = 2006,
+  start_time = 2020,
   end_time = 2022,
   remove_abbrev_cols = TRUE
 ){
 
-  dstruc <- get_oecd_data_structure(variables)
+  dstruc <- suppressMessages(get_dstrucs(variables))
 
   country_list <- dstruc$LOCATION
 
@@ -337,9 +361,13 @@ get_oecd_labour_force_live <- function(
                   frequency = .data$label)
 
   LFS_dat <- OECD::get_dataset(dataset = variables,
-                               filter = list(countries),
+                               filter = list(countries,
+                                             c("EMP", "G_EMP", "LF",
+                                               "G_UNEMP", "HUR", "LTUNEMP",
+                                               "LFPR")),
                                start_time = start_time,
-                               endtime = end_time)
+                               endtime = end_time) %>%
+    oecd_rename_obsTime()
 
   LFS_filter <- LFS_dat %>%
     dplyr::mutate(year = stringr::str_extract(.data$Time,"[0-9][0-9][0-9][0-9]")) %>%
@@ -384,8 +412,59 @@ get_oecd_labour_force_live <- function(
                     -.data$FREQUENCY)
   }
 
-  return(cpi_filter)
+  return(LFS_filter)
 
 
+
+}
+
+oecd_rename_obsTime <- function(.data){
+
+  dat_names <- names(.data)
+
+  if (any(dat_names == "obsTime")) {
+
+    dat_names <- stringr::str_replace(dat_names, pattern = "obsTime", replacement = "Time")
+
+  }
+
+  names(.data) <- dat_names
+
+  return(.data)
+
+}
+
+get_dstrucs <- function(data_set) {
+
+  dest <- paste0(tempdir(), "\\temp.rds")
+
+  if (data_set == "DP_LIVE") {
+
+    suppressMessages(download.file(url = "https://github.com/nikhilchandra-stats/macrodatasetsraw/raw/master/data/dstruc_DP_LIVE.rds",
+                  destfile = dest))
+
+    dat <- readRDS(file = dest)
+
+  }
+
+  if (data_set == "PRICES") {
+
+    suppressMessages(download.file(url = "https://github.com/nikhilchandra-stats/macrodatasetsraw/raw/master/data/dstruc_PRICES.rds",
+                  destfile = dest))
+
+    dat <- readRDS(file = dest)
+
+  }
+
+  if (data_set == "QNA") {
+
+    suppressMessages(download.file(url = "https://github.com/nikhilchandra-stats/macrodatasetsraw/raw/master/data/dstruc_QNA.rds",
+                  destfile = dest))
+
+    dat <- readRDS(file = dest)
+
+  }
+
+  return(dat)
 
 }

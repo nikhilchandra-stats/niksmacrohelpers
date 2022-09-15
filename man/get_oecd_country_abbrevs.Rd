@@ -2,7 +2,7 @@
 % Please edit documentation in R/OECD_data_helpers.R
 \name{get_oecd_country_abbrevs}
 \alias{get_oecd_country_abbrevs}
-\title{This function will return a tibble containg country and names and abbrevations
+\title{This function will return a tibble containing country and names and abbreviations
 used in the OECD database. The other OECD get functions require country
 abbreviations to be provided as an input.}
 \usage{
@@ -12,7 +12,7 @@ get_oecd_country_abbrevs()
 (tibble) A tibble containing all country abbreviations and names.
 }
 \description{
-This function will return a tibble containg country and names and abbrevations
+This function will return a tibble containing country and names and abbreviations
 used in the OECD database. The other OECD get functions require country
 abbreviations to be provided as an input.
 }
