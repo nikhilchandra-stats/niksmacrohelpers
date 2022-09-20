@@ -447,7 +447,7 @@ get_dstrucs <- function(data_set) {
 
   }
 
-  if (data_set == "PRICES") {
+  if (data_set == "PRICES"|data_set == "PRICES_CPI") {
 
     suppressMessages(download.file(url = "https://github.com/nikhilchandra-stats/macrodatasetsraw/raw/master/data/dstruc_PRICES.rds",
                   destfile = dest))
