@@ -107,16 +107,17 @@ get_oecd_gdp_live <- function(
 
   GDP_dat_filter <- GDP_dat %>%
     dplyr::mutate(year = stringr::str_extract(.data$Time,"[0-9][0-9][0-9][0-9]")) %>%
-    dplyr::mutate(quarter_date =
+    dplyr::mutate(date =
                     dplyr::case_when(
                       stringr::str_detect(.data$Time,"Q1") ~ glue::glue("{year}-03-01"),
                       stringr::str_detect(.data$Time,"Q2") ~ glue::glue("{year}-06-01"),
                       stringr::str_detect(.data$Time,"Q3") ~ glue::glue("{year}-09-01"),
-                      stringr::str_detect(.data$Time,"Q4") ~ glue::glue("{year}-12-01")
+                      stringr::str_detect(.data$Time,"Q4") ~ glue::glue("{year}-12-01"),
+                      stringr::str_detect(.data$Time,"[0-9]+-[0-9]+") ~ glue::glue("{.data$Time}-01")
                     )
     ) %>%
     dplyr::mutate(
-      date = lubridate::as_date(.data$Time)
+      date = lubridate::as_date(.data$date)
     ) %>%
     dplyr::left_join(
       variable_details, by = "SUBJECT"
@@ -132,10 +133,6 @@ get_oecd_gdp_live <- function(
     ) %>%
     dplyr::left_join(
       time_info, by = "TIME_FORMAT"
-    ) %>%
-    dplyr::mutate(
-      date = ifelse(!is.na(.data$quarter_date) & is.na(.data$date),
-                    .data$quarter_date, .data$date)
     )
 
   if(remove_abbrev_cols){
@@ -187,7 +184,7 @@ get_oecd_gdp_live <- function(
 get_oecd_CPI_live <- function( variables = "PRICES_CPI",
                           countries = c("CHN", "USA", "GBR", "OECD", "G-7",
                                         "EU27_2020", "JPN", "ITA", "AUS", "CAN", "FRA", "DEU", "NZL", "NLD", "KOR", "IDN", "CHE"),
-                          start_time = 2006,
+                          start_time = 2020,
                           end_time = 2022,
                           remove_abbrev_cols = TRUE
 ){
@@ -224,16 +221,17 @@ get_oecd_CPI_live <- function( variables = "PRICES_CPI",
 
   cpi_filter <- CPI_dat %>%
     dplyr::mutate(year = stringr::str_extract(.data$Time,"[0-9][0-9][0-9][0-9]")) %>%
-    dplyr::mutate(quarter_date =
+    dplyr::mutate(date =
                     dplyr::case_when(
                       stringr::str_detect(.data$Time,"Q1") ~ glue::glue("{year}-03-01"),
                       stringr::str_detect(.data$Time,"Q2") ~ glue::glue("{year}-06-01"),
                       stringr::str_detect(.data$Time,"Q3") ~ glue::glue("{year}-09-01"),
-                      stringr::str_detect(.data$Time,"Q4") ~ glue::glue("{year}-12-01")
+                      stringr::str_detect(.data$Time,"Q4") ~ glue::glue("{year}-12-01"),
+                      stringr::str_detect(.data$Time,"[0-9]+-[0-9]+") ~ glue::glue("{.data$Time}-01")
                     )
     ) %>%
     dplyr::mutate(
-      date = lubridate::as_date(.data$Time)
+      date = lubridate::as_date(.data$date)
     ) %>%
     dplyr::left_join(
       variable_details, by = "SUBJECT"
@@ -249,10 +247,6 @@ get_oecd_CPI_live <- function( variables = "PRICES_CPI",
     ) %>%
     dplyr::left_join(
       time_info, by = "TIME_FORMAT"
-    ) %>%
-    dplyr::mutate(
-      date = ifelse(!is.na(.data$quarter_date) & is.na(.data$date),
-                    .data$quarter_date, .data$date)
     )
 
   if(remove_abbrev_cols){
@@ -371,16 +365,17 @@ get_oecd_labour_force_live <- function(
 
   LFS_filter <- LFS_dat %>%
     dplyr::mutate(year = stringr::str_extract(.data$Time,"[0-9][0-9][0-9][0-9]")) %>%
-    dplyr::mutate(quarter_date =
+    dplyr::mutate(date =
                     dplyr::case_when(
                       stringr::str_detect(.data$Time,"Q1") ~ glue::glue("{year}-03-01"),
                       stringr::str_detect(.data$Time,"Q2") ~ glue::glue("{year}-06-01"),
                       stringr::str_detect(.data$Time,"Q3") ~ glue::glue("{year}-09-01"),
-                      stringr::str_detect(.data$Time,"Q4") ~ glue::glue("{year}-12-01")
+                      stringr::str_detect(.data$Time,"Q4") ~ glue::glue("{year}-12-01"),
+                      stringr::str_detect(.data$Time,"[0-9]+-[0-9]+") ~ glue::glue("{.data$Time}-01")
                     )
     ) %>%
     dplyr::mutate(
-      date = lubridate::as_date(.data$Time)
+      date = lubridate::as_date(.data$date)
     ) %>%
     dplyr::left_join(
       full_country, by = "LOCATION"
@@ -399,10 +394,6 @@ get_oecd_labour_force_live <- function(
     ) %>%
     dplyr::left_join(
       frequency_info, by = "FREQUENCY"
-    ) %>%
-    dplyr::mutate(
-      date = ifelse(!is.na(.data$quarter_date) & is.na(.data$date),
-                    .data$quarter_date, .data$date)
     )
 
   if(remove_abbrev_cols){
@@ -547,16 +538,17 @@ get_oecd_data_DP_LIVE <- function(
 
   dat_filter <- dat %>%
     dplyr::mutate(year = stringr::str_extract(.data$Time,"[0-9][0-9][0-9][0-9]")) %>%
-    dplyr::mutate(quarter_date =
+    dplyr::mutate(date =
                     dplyr::case_when(
                       stringr::str_detect(.data$Time,"Q1") ~ glue::glue("{year}-03-01"),
                       stringr::str_detect(.data$Time,"Q2") ~ glue::glue("{year}-06-01"),
                       stringr::str_detect(.data$Time,"Q3") ~ glue::glue("{year}-09-01"),
-                      stringr::str_detect(.data$Time,"Q4") ~ glue::glue("{year}-12-01")
+                      stringr::str_detect(.data$Time,"Q4") ~ glue::glue("{year}-12-01"),
+                      stringr::str_detect(.data$Time,"[0-9]+-[0-9]+") ~ glue::glue("{.data$Time}-01")
                     )
     ) %>%
     dplyr::mutate(
-      date = lubridate::as_date(.data$Time)
+      date = lubridate::as_date(.data$date)
     ) %>%
     dplyr::left_join(
       full_country, by = "LOCATION"
@@ -575,10 +567,6 @@ get_oecd_data_DP_LIVE <- function(
     ) %>%
     dplyr::left_join(
       frequency_info, by = "FREQUENCY"
-    ) %>%
-    dplyr::mutate(
-      date = ifelse(!is.na(.data$quarter_date) & is.na(.data$date),
-                    .data$quarter_date, .data$date)
     )
 
   if(remove_abbrev_cols){
