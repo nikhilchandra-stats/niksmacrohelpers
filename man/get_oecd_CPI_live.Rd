@@ -10,7 +10,7 @@ get_oecd_CPI_live(
   variables = "PRICES_CPI",
   countries = c("CHN", "USA", "GBR", "OECD", "G-7", "EU27_2020", "JPN", "ITA", "AUS",
     "CAN", "FRA", "DEU", "NZL", "NLD", "KOR", "IDN", "CHE"),
-  start_time = 2006,
+  start_time = 2020,
   end_time = 2022,
   remove_abbrev_cols = TRUE
 )
