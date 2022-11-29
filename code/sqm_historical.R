@@ -224,11 +224,12 @@ extract_chart_data_sqm <- function(
 }
 
 
-all_post_codes <- readxl::read_excel("data/post_codes/POA_2021_AUST.xlsx") %>%
+all_post_codes <- readxl::read_excel("C:/GitHub/maps data/POA/POA_2021_AUST.xlsx") %>%
   distinct(POA_CODE_2021) %>%
+  filter(stringr::str_detect(POA_CODE_2021, "3[0-9][0-9][0-9]")) %>%
   pull(POA_CODE_2021)
 
-for (i in 14:length(all_post_codes)) {
+for (i in 1:length(all_post_codes)) {
 
   postcode = all_post_codes[i]
 
@@ -240,14 +241,19 @@ for (i in 14:length(all_post_codes)) {
 
   remote_driver$navigate(url)
 
-  safely_extract <- safely(extract_chart_data, otherwise = NULL)
+  safely_extract <- safely(extract_chart_data_sqm, otherwise = NULL)
 
   dat <-
     safely_extract(
       page_source = remote_driver$getPageSource(),
-      xpath_chart = combined
+      xpath_chart = combined,
+      start_date = "2009-08-01"
     ) %>%
-    pluck(1)
+    pluck(1) %>%
+    rename(
+      median_weekly_rent = translated_y,
+      approximate_date = translated_x
+    )
 
   if(any(class(dat) == "tbl_df") & !is.null(dat)){
 
@@ -256,7 +262,7 @@ for (i in 14:length(all_post_codes)) {
         poa_code = postcode
       )
 
-    write.csv(dat,glue::glue("data/rental_data/rent_ts_{postcode}.csv"))
+    write.csv(dat,glue::glue("C:/GitHub/Rent Data/rent_ts_{postcode}.csv"))
 
   }
 
