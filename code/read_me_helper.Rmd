@@ -53,7 +53,7 @@ p1 <- GDP %>%
     legend.title = ggplot2::element_blank()
   )
 
-plot(p1)
+p1
 
 ```
 
