@@ -1,0 +1,44 @@
+---
+title: "Example Outputs"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: scroll
+    source_code: embed
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(niksmacrohelpers)
+```
+
+Column
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+
+
+
+```
+
+Column {.tabset}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r userinputs1, echo=TRUE}
+test <- shiny::selectInput("name_select", 
+                   label = "Select LGA", 
+                   choices = c("test1", "test2"))
+
+```
+
+### Chart C
+
+```{r chart3, echo=TRUE}
+test
+```
+
