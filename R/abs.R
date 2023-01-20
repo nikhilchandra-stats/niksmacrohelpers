@@ -105,6 +105,20 @@ get_abs_quick_stats <- function(year = "2021",
 
 }
 
+#' This function plucks concordance files from the ABS website and reads it into
+#' your global environment.
+#'
+#' @param geo_type (character; SA2) Geo type, set to POA for postcodes and LGA
+#' for LGA.
+#'
+#' @return (tibble)
+#' @export
+#'
+#' @examples \dontrun{
+#'
+#' post_code_concordances <- get_abs_region_allocation("POA")
+#'
+#' }
 get_abs_region_allocation <- function(geo_type = "SA2") {
 
 
