@@ -124,7 +124,7 @@ get_abs_region_allocation <- function(geo_type = "SA2") {
 
   dest <- paste0(tempdir(), "\\temp.XLSX")
 
-  if(str_detect(geo_type, "SA")) {
+  if(stringr::str_detect(geo_type, "SA")) {
 
     url1 = "https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/access-and-downloads/allocation-files/MB_2021_AUST.xlsx"
 
@@ -134,7 +134,7 @@ get_abs_region_allocation <- function(geo_type = "SA2") {
 
   }
 
-  if(str_detect(geo_type, "POA|postcode|Postcode")) {
+  if(stringr::str_detect(geo_type, "POA|postcode|Postcode")) {
 
     url1 = "https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/access-and-downloads/allocation-files/POA_2021_AUST.xlsx"
 
@@ -144,7 +144,7 @@ get_abs_region_allocation <- function(geo_type = "SA2") {
 
   }
 
-  if(str_detect(geo_type, "LGA|lga|local")) {
+  if(stringr::str_detect(geo_type, "LGA|lga|local")) {
 
     url1 = "https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/access-and-downloads/allocation-files/LGA_2021_AUST.xlsx"
 
@@ -153,6 +153,18 @@ get_abs_region_allocation <- function(geo_type = "SA2") {
     dat <- readxl::read_excel(tf)
 
   }
+
+  if(stringr::str_detect(geo_type, "electorate|CED")) {
+
+    url1 = "https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/access-and-downloads/allocation-files/CED_2021_AUST.xlsx"
+
+    httr::GET(url1, httr::write_disk(tf <- tempfile(fileext = ".xlsx")))
+
+    dat <- readxl::read_excel(tf)
+
+  }
+
+
 
   return(dat)
 

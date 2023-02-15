@@ -12,6 +12,9 @@
 #'
 #' "consultancy": This will extract the consultancy report from the website.
 #'
+#' "published contracts": Published contracts report.
+#'
+#'
 #' @return (tibble)
 #' @export
 #'
@@ -29,7 +32,7 @@ get_aus_tender_data <- function(
   if(stringr::str_to_lower(wanted_data)  == "tender extensions") {
 
     base_url <-
-      glue::glue("https://www.tenders.gov.au/Reports/CnAndAmendmentsDownload?AgencyStatus=-1&DateType=Publish%20Date&DateStart=01-Jan-2016&DateEnd={current_date}")
+      glue::glue("https://www.tenders.gov.au/Reports/CnAndAmendmentsDownload?AgencyStatus=-1&DateType=Publish%20Date&DateStart=01-Jan-{start_year}&DateEnd={current_date}")
 
     excel_skip <- 27
 
@@ -38,7 +41,7 @@ get_aus_tender_data <- function(
   if(stringr::str_to_lower(wanted_data)  == "unspsc") {
 
     base_url <-
-      glue::glue("https://www.tenders.gov.au/Reports/CnUnspscDownload?AgencyStatus=-1&DateStart=01-Jan-2016&DateEnd={current_date}&DateType=Publish%20Date&GroupBy=By%20Category%20Code")
+      glue::glue("https://www.tenders.gov.au/Reports/CnUnspscDownload?AgencyStatus=-1&DateStart=01-Jan-{start_year}&DateEnd={current_date}&DateType=Publish%20Date&GroupBy=By%20Category%20Code")
 
     excel_skip <- 9
 
@@ -47,17 +50,27 @@ get_aus_tender_data <- function(
   if(stringr::str_to_lower(wanted_data)  == "consultancy") {
 
     base_url <-
-      glue::glue("https://www.tenders.gov.au/Reports/CnConsultancyDownload?AgencyStatus=-1&DateStart=01-Jan-2016&DateEnd={current_date}&DateType=Publish%20Date")
+      glue::glue("https://www.tenders.gov.au/Reports/CnConsultancyDownload?AgencyStatus=-1&DateStart=01-Jan-{start_year}&DateEnd={current_date}&DateType=Publish%20Date")
 
     excel_skip <- 15
 
   }
 
-  url_for_dl <- as.character(base_url)
+  if(stringr::str_to_lower(wanted_data)  == "published contracts") {
 
-  httr::GET(url_for_dl, httr::write_disk(tf <- tempfile(fileext = ".xlsx")))
+    base_url <-
+      glue::glue("https://www.tenders.gov.au/Reports/CnPublishedDownload?AgencyStatus=0&DateType=Publish%20Date&DateStart=01-Jan-{start_year}&DateEnd={current_date}")
 
-  dat <- readxl::read_excel(tf, skip = excel_skip)
+    excel_skip <- 19
+
+  }
+
+    url_for_dl <- as.character(base_url)
+
+    httr::GET(url_for_dl, httr::write_disk(tf <- tempfile(fileext = ".xlsx")))
+
+    dat <- readxl::read_excel(tf, skip = excel_skip)
+
 
   return(dat)
 
