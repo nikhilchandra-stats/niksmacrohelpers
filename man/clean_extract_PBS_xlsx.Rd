@@ -5,9 +5,9 @@
 \title{This function will extract out data from PBS Budget data from data.gov}
 \usage{
 clean_extract_PBS_xlsx(
-  .path = "2021-22 PBS AFP.XLSX",
+  .path = "2017-18 PBS tables Australian Federal Police.xlsx",
   entity_name = "Australian Federal Police",
-  budget_calendar_year = 2021
+  budget_calendar_year = 2017
 )
 }
 \arguments{

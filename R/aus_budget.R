@@ -91,9 +91,9 @@ extract_aus_BP2 <- function(skip_tables = 32,
 #'  budget_calendar_year = 2021)
 #'
 #' }
-clean_extract_PBS_xlsx <- function(.path = "2021-22 PBS AFP.XLSX",
+clean_extract_PBS_xlsx <- function(.path = "2017-18 PBS tables Australian Federal Police.xlsx",
                                    entity_name = "Australian Federal Police",
-                                   budget_calendar_year = 2021) {
+                                   budget_calendar_year = 2017) {
 
   sheet_names <- readxl::excel_sheets(.path)
 
@@ -127,9 +127,20 @@ clean_extract_PBS_xlsx <- function(.path = "2021-22 PBS AFP.XLSX",
     table_names_temp <-
       names(readxl::read_excel(path = .path, sheet = sheet_names[i], range = "A1" ))[1]
 
+    start_index <- 2
+
+    if(is.na(table_names_temp)){
+      table_names_temp <-
+        names(readxl::read_excel(path = .path, sheet = sheet_names[i], range = "A2" ))[1]
+
+      start_index <- 3
+    }
+
     if( stringr::str_detect(sheet_names[i],"1.1") ) {
       table_temp <-
-        readxl::read_excel(path = .path, sheet = sheet_names[i], range = "A2:C30") %>%
+        readxl::read_excel(path = .path, sheet = sheet_names[i],
+                           range = glue::glue("A{start_index}:C30") %>% as.character()
+                           ) %>%
         dplyr::rename(var = 1,
                       !!as.name(budget_year_vec[1]) := 2,
                       !!as.name(budget_year_vec[2]) := 3) %>%
@@ -141,7 +152,8 @@ clean_extract_PBS_xlsx <- function(.path = "2021-22 PBS AFP.XLSX",
 
     if(stringr::str_detect(sheet_names[i],"1.2")) {
       table_temp <-
-        readxl::read_excel(path = .path, sheet = sheet_names[i], range = "A3:G30") %>%
+        readxl::read_excel(path = .path, sheet = sheet_names[i],
+                           range = glue::glue("A{start_index + 1}:G30") %>% as.character()) %>%
         dplyr::rename(var = 1,
                       program = 2,
                       !!as.name(budget_year_vec[1]) := 3,
@@ -162,7 +174,8 @@ clean_extract_PBS_xlsx <- function(.path = "2021-22 PBS AFP.XLSX",
 
     if(stringr::str_detect(sheet_names[i],"2.2|2.3|3.1|3.2")) {
       table_temp <-
-        readxl::read_excel(path = .path, sheet = sheet_names[i], range = "A2:F100") %>%
+        readxl::read_excel(path = .path, sheet = sheet_names[i],
+                           range = glue::glue("A{start_index}:F100") %>% as.character()) %>%
         dplyr::rename(var = 1,
                       !!as.name(budget_year_vec[1]) := 2,
                       !!as.name(budget_year_vec[2]) := 3,
@@ -181,7 +194,8 @@ clean_extract_PBS_xlsx <- function(.path = "2021-22 PBS AFP.XLSX",
 
     if(stringr::str_detect(sheet_names[i],"2.1|2.2|2.3|3.1|3.2|3.4|3.5|3.6|3.8|3.9")) {
       table_temp <-
-        readxl::read_excel(path = .path, sheet = sheet_names[i], range = "A3:F100") %>%
+        readxl::read_excel(path = .path, sheet = sheet_names[i],
+                           range = glue::glue("A{start_index + 1}:F100") %>% as.character()) %>%
         dplyr::rename(var = 1,
                       !!as.name(budget_year_vec[1]) := 2,
                       !!as.name(budget_year_vec[2]) := 3,
@@ -200,7 +214,8 @@ clean_extract_PBS_xlsx <- function(.path = "2021-22 PBS AFP.XLSX",
 
     if(stringr::str_detect(sheet_names[i],"3.3")) {
       table_temp <-
-        readxl::read_excel(path = .path, sheet = sheet_names[i], range = "A2:E100") %>%
+        readxl::read_excel(path = .path, sheet = sheet_names[i],
+                           range = glue::glue("A{start_index}:E100") %>% as.character()) %>%
         dplyr::rename(var = 1) %>%
         dplyr::mutate(
           entity_name = entity_name,

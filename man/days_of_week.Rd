@@ -9,6 +9,9 @@ days_of_week(abbrev = FALSE)
 \arguments{
 \item{abbrev}{(Boolean; FALSE) Abbreviates the days if set to TRUE}
 }
+\value{
+(character) The function will return a vector of the days of the week
+}
 \description{
 Return a vector of days of the week
 }
