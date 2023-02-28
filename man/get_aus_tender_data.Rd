@@ -18,7 +18,9 @@ webstite.
 
 "unspsc": This will extract uspsc data  from the website.
 
-"consultancy": This will extract the consultancy report from the website.}
+"consultancy": This will extract the consultancy report from the website.
+
+"published contracts": Published contracts report.}
 }
 \value{
 (tibble)

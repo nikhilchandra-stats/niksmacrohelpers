@@ -171,3 +171,22 @@ get_abs_region_allocation <- function(geo_type = "SA2") {
 }
 
 
+#' Get CPI TABLES 1 and 2. CPI: All Groups, Index Numbers and Percentage Changes
+#' and clean
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get_abs_cpi_table1 <- function() {
+
+  dest <- paste0(tempdir(), "\\temp.XLSX")
+
+  url1 = "https://www.abs.gov.au/statistics/economy/price-indexes-and-inflation/consumer-price-index-australia/dec-quarter-2022/640101.xlsx"
+
+  httr::GET(url1, httr::write_disk(tf <- tempfile(fileext = ".xlsx")))
+
+  dat <- readxl::read_excel(tf)
+
+}
+
