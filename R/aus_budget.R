@@ -91,9 +91,9 @@ extract_aus_BP2 <- function(skip_tables = 32,
 #'  budget_calendar_year = 2021)
 #'
 #' }
-clean_extract_PBS_xlsx <- function(.path = "2017-18 PBS tables Australian Federal Police.xlsx",
+clean_extract_PBS_xlsx <- function(.path = "australianfederalpolice201415.xlsx",
                                    entity_name = "Australian Federal Police",
-                                   budget_calendar_year = 2017) {
+                                   budget_calendar_year = 2014) {
 
   sheet_names <- readxl::excel_sheets(.path)
 

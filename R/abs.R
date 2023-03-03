@@ -190,3 +190,113 @@ get_abs_cpi_table1 <- function() {
 
 }
 
+#' This function
+#'
+#' @param year_var
+#' @param geo_type
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get_abs_com_prof_vars <- function(year_var = "2021",
+                                  geo_type = "POA"
+                                  ) {
+
+  geo_code = "2600"
+
+  if(year_var %in% c("2016", "2021")) {
+
+    url_temp <-
+      glue::glue("https://www.abs.gov.au/census/find-census-data/community-profiles/{year_var}/{geo_type}{geo_code}")
+
+    html_read <- rvest::read_html(url_temp) %>%
+      rvest::html_element(xpath = "/html/body/div[1]/main/div[3]/div/div[2]/div[1]/div[1]/div/div/div/div/div/div[2]/span/a")
+
+    download_link <- html_read %>%
+      rvest::html_attrs() %>%
+      purrr::pluck("href")
+
+    url_x <-
+      paste0("https://www.abs.gov.au",download_link)
+
+
+  } else {
+
+    url_x <-
+      glue::glue("https://www.abs.gov.au/census/find-census-data/community-profiles/{year_var}/{geo_type}{geo_code}/download/BCP_{geo_type}{geo_code}.xlsx")
+
+  }
+
+
+  dest <- paste0(tempdir(), "\\temp.XLSX")
+
+  httr::GET(url_x, httr::write_disk(tf <- tempfile(fileext = ".xlsx")))
+
+  sheet_names <- readxl::excel_sheets(tf)
+
+  if(year_var == "2011") {
+    dat <- readxl::read_excel(tf, sheet = 3, range = "A8:E55")
+    tables_1 <- dat[,1:2]
+    tables_2 <- dat[,3:4]
+    names(tables_1) <- c("sheet_name", "variables")
+    names(tables_2) <- c("sheet_name", "variables")
+    all_tables <- tables_1 %>%
+      dplyr::bind_rows(tables_2) %>%
+      dplyr::filter(!is.na(sheet_name))
+  }
+
+  if(year_var == "2016") {
+
+    dat <- readxl::read_excel(tf, sheet = 3, range = "A8:E55")
+    tables_1 <- dat[,1:2]
+    tables_2 <- dat[,3:4]
+    names(tables_1) <- c("sheet_name", "variables")
+    names(tables_2) <- c("sheet_name", "variables")
+
+    dat2 <- readxl::read_excel(tf, sheet = 4, range = "A8:E55")
+    tables_3 <- dat[,1:2]
+    tables_4 <- dat[,3:4]
+    names(tables_3) <- c("sheet_name", "variables")
+    names(tables_4) <- c("sheet_name", "variables")
+
+    all_tables <- tables_1 %>%
+      dplyr::bind_rows(tables_2) %>%
+      dplyr::bind_rows(tables_3) %>%
+      dplyr::bind_rows(tables_4) %>%
+      dplyr::filter(!is.na(sheet_name))
+
+  }
+
+  if(year_var %in% c("2021", "2006")) {
+
+    dat <- readxl::read_excel(tf, sheet = 2, range = "A4:E55")
+    tables_1 <- dat[,1:2]
+    tables_2 <- dat[,3:4]
+    names(tables_1) <- c("sheet_name", "variables")
+    names(tables_2) <- c("sheet_name", "variables")
+
+    all_tables <- tables_1 %>%
+      dplyr::bind_rows(tables_2) %>%
+      dplyr::filter(!is.na(sheet_name))%>%
+      dplyr::filter(!is.na(variables))
+
+  }
+
+
+  return(all_tables)
+
+}
+
+get_abs_community_profile <- function(year_var = "2011",
+                                      geo_code = "2600",
+                                      geo_type = "POA",
+                                      excel_sheet = 3,
+                                      cell_range = "A") {
+
+  url_x <-
+    glue::glue("https://www.abs.gov.au/census/find-census-data/community-profiles/{year_var}/{geo_type}{geo_code}/download/BCP_{geo_type}{geo_code}.xlsx")
+
+  data_read
+
+}
