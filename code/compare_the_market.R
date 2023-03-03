@@ -28,9 +28,32 @@ if(local_testing){
 }
 
 # ---- Define the base function to loop over
+#' This function will take in a Rselenium object and click through, provide
+#' inputs and then works its way to the electricity prices and scrapes those
+#' values. The function takes in a post code and subsequently gets the proces
+#' for that.
+#'
+#' @param remote_driver (Rselenium object) Feed this function your remote driver
+#' object once selenium starts.
+#' @param url_x (character) The compare the market URL
+#' @param string_postcode (character; "2600") Postcode
+#' @param phone_number (character) Must be of the form "xxxx xxx xxx". You cant
+#' get the prices without giving it details.
+#' @param email_address (character) email address. You cant
+#' get the prices without giving it details.
+#' @param your_name (character) You cant get the prices without giving it
+#' details. Just give it some bogus name.
+#'
+#' @return (tibble)
+#' @export
+#'
+#' @examples
 nav_get_price_comp_mark <- function(remote_driver,
                                     url_x = "https://www.comparethemarket.com.au/energy/journey/start?utility_compareto=E&utility_movingin=Y",
-                                    string_postcode = "2600"
+                                    string_postcode = "2600",
+                                    phone_number,
+                                    email_address,
+                                    your_name
                                     ) {
 
   remote_driver$navigate(url = url_x)
@@ -105,15 +128,15 @@ nav_get_price_comp_mark <- function(remote_driver,
 
   # Give personal Details
   input_field <- remote_driver$findElement(using = "xpath", value = "/html/body/div[1]/div/div/section/div/div/main/div[1]/form/div/div[1]/input")
-  input_field$sendKeysToElement(list("Nikhil"))
+  input_field$sendKeysToElement(list(your_name))
   Sys.sleep(runif(n = 1, 1,2))
 
   input_field <- remote_driver$findElement(using = "xpath", value = "/html/body/div[1]/div/div/section/div/div/main/div[1]/form/div/div[2]/input")
-  input_field$sendKeysToElement(list("nikhilchandra694@hotmail.com"))
+  input_field$sendKeysToElement(list(email_address))
   Sys.sleep(runif(n = 1, 1,2))
 
   input_field <- remote_driver$findElement(using = "xpath", value = "/html/body/div[1]/div/div/section/div/div/main/div[1]/form/div/div[3]/input")
-  input_field$sendKeysToElement(list("0432 687 587"))
+  input_field$sendKeysToElement(list(phone_number))
   Sys.sleep(runif(n = 1, 1,2))
 
   remote_driver$findElement(using = "xpath", value = "/html/body/div[1]/div/div/section/div/div/main/div[1]/div/div[2]/button")$clickElement()
