@@ -32,8 +32,15 @@ get_abs_quick_stats <- function(year = "2021",
 
   geography <- toupper(geography)
 
-  url <-
-    glue::glue("https://www.abs.gov.au/census/find-census-data/quickstats/{year}/{geography}{geo_code}")
+  if(stringr::str_detect(geography,"SA")) {
+    url <-
+      glue::glue("https://www.abs.gov.au/census/find-census-data/quickstats/{year}/{geo_code}")
+  }else{
+
+    url <-
+      glue::glue("https://www.abs.gov.au/census/find-census-data/quickstats/{year}/{geography}{geo_code}")
+
+  }
 
   dat_raw <- xml2::read_html(url) %>%
     rvest::html_table()
@@ -285,18 +292,5 @@ get_abs_com_prof_vars <- function(year_var = "2021",
 
 
   return(all_tables)
-
-}
-
-get_abs_community_profile <- function(year_var = "2011",
-                                      geo_code = "2600",
-                                      geo_type = "POA",
-                                      excel_sheet = 3,
-                                      cell_range = "A") {
-
-  url_x <-
-    glue::glue("https://www.abs.gov.au/census/find-census-data/community-profiles/{year_var}/{geo_type}{geo_code}/download/BCP_{geo_type}{geo_code}.xlsx")
-
-  data_read
 
 }
