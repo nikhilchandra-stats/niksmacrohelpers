@@ -115,6 +115,9 @@ get_abs_quick_stats <- function(year = "2021",
 #' This function plucks concordance files from the ABS website and reads it into
 #' your global environment.
 #'
+#' All allocation data is downloaded from:
+#' "https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/access-and-downloads/allocation-files/"
+#'
 #' @param geo_type (character; SA2) Geo type, set to POA for postcodes and LGA
 #' for LGA.
 #'
@@ -123,7 +126,25 @@ get_abs_quick_stats <- function(year = "2021",
 #'
 #' @examples \dontrun{
 #'
+#' #POA data
 #' post_code_concordances <- get_abs_region_allocation("POA")
+#'
+#' #State Electorate Data
+#'
+#' POA_data <-
+#'  get_abs_region_allocation(geo_type = "POA") %>%
+#'  dplyr::distinct(MB_CODE_2021, POA_CODE_2021)
+#'
+#' #State Electorate Data
+#'
+#' CED_data <-
+#'  get_abs_region_allocation(geo_type = "CED") %>%
+#'  dplyr::distinct(MB_CODE_2021, CED_CODE_2021, CED_NAME_2021, STATE_NAME_2021)
+#'
+#' #State Electorate Data
+#' SED_data <-
+#'  get_abs_region_allocation(geo_type = "SED") %>%
+#'  dplyr::distinct(MB_CODE_2021, SED_CODE_2024, SED_NAME_2024, STATE_NAME_2021)
 #'
 #' }
 get_abs_region_allocation <- function(geo_type = "SA2") {
@@ -171,7 +192,26 @@ get_abs_region_allocation <- function(geo_type = "SA2") {
 
   }
 
+  if(stringr::str_detect(geo_type, "state electorate|SED")) {
 
+    url1 = "https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/access-and-downloads/allocation-files/SED_2024_AUST.xlsx"
+
+    httr::GET(url1, httr::write_disk(tf <- tempfile(fileext = ".xlsx")))
+
+    dat <- readxl::read_excel(tf)
+
+  }
+
+  if(stringr::str_detect(geo_type, "WA electorate")) {
+
+    url1 = "https://www.aec.gov.au/redistributions/2023/wa/final-report/files/Western%20Australia%20-%20electoral%20divisions%20-%20SA1%20and%20SA2.xlsx"
+
+
+    httr::GET(url1, httr::write_disk(tf <- tempfile(fileext = ".xlsx")))
+
+    dat <- readxl::read_excel(tf)
+
+  }
 
   return(dat)
 
