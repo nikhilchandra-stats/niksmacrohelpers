@@ -263,6 +263,10 @@ concord_CED_POA_by_pop_WA_redist <- function(MB_pop =
 #' website using an internal function in this package.
 #' @param summarise_cols (character vector) This is the columns from the main TB data set you
 #' want to summarise.
+#' @param POA_data (tibble) POA Allocation Data. By Default it will draw this from the ABS
+#' website using an internal function in this package.
+#' @param CED_data (tibble) CED Allocation Data. By Default it will draw this from the ABS
+#' website using an internal function in this package.
 #'
 #' @return (tibble) Returns TB data summarised by CED
 #' @export
@@ -289,6 +293,10 @@ concord_CED_POA_by_pop_WA_redist <- function(MB_pop =
 #' }
 concord_ABS_TB_Education_CED <- function(path = "https://raw.githubusercontent.com/nikhilchandra-stats/macrodatasetsraw/refs/heads/master/data/SA1_Education.csv",
                                       MB_pop = get_ABS_MB_pop(),
+                                      POA_data =
+                                        get_abs_region_allocation(geo_type = "POA") ,
+                                      CED_data =
+                                        get_abs_region_allocation(geo_type = "CED"),
                                       MB_allocation_file = get_abs_region_allocation(),
                                       summarise_cols =
                                         c("Dwelling", "Person", "Bacchelors_and_above",
@@ -327,6 +335,108 @@ concord_ABS_TB_Education_CED <- function(path = "https://raw.githubusercontent.c
         `Professional Specialist Qualification, Doctoral Degree Level` +
         `Master Degree Level, nfd` + `Graduate Diploma and Graduate Certificate Level, nfd` +
         `Graduate Diploma` + `Graduate Certificate` )
+
+  MB_POA_CED_joined_SA1_summed <- MB_POA_CED_joined_SA1  %>%
+    dplyr::group_by(SA1_CODE_2021, POA_CODE_2021, CED_CODE_2021, CED_NAME_2021, STATE_NAME_2021) %>%
+    dplyr::summarise(Person = sum(Person, na.rm = T),
+              Dwelling = sum(Dwelling, na.rm = T),
+              AREA_ALBERS_SQKM = sum(Person, na.rm = T))
+
+  dat_temp4 <- MB_POA_CED_joined_SA1_summed %>%
+    dplyr::left_join(dat_temp4) %>%
+    dplyr::group_by(CED_CODE_2021, CED_NAME_2021, SA1_CODE_2021, STATE_NAME_2021) %>%
+    dplyr::summarise(
+      dplyr::across(.cols = tidyselect::matches(summarise_cols, ignore.case = FALSE),
+             .fns = ~ sum(., na.rm = T)
+      )
+    )
+
+  dat_temp5 <- dat_temp4 %>%
+    dplyr::group_by( SA1_CODE_2021) %>%
+    dplyr::mutate(SA1_count = dplyr::n_distinct(CED_NAME_2021)) %>%
+    dplyr::ungroup() %>%
+    dplyr::group_by(CED_NAME_2021) %>%
+    dplyr::summarise(
+      dplyr::across(.cols = tidyselect::matches(summarise_cols, ignore.case = FALSE),
+             .fns = ~ sum(., na.rm = T)
+      )
+    )
+
+  names(dat_temp5)[-1] <- paste0("CED - ", names(dat_temp5)[-1])
+
+  return(dat_temp5)
+
+}
+
+#' get_ABS_TB_data_LFS
+#'
+#' This function concords ABS Table Builder data on Labour Force Status from
+#' Table Builder to CED.The TB data is stored in my Github Repo.
+#'
+#' TB = ABS Table Builder
+#'
+#' @param path (character) url for where the TB data is stored
+#' @param MB_pop (tibble) Meshblock Population. By Default it will draw this from the ABS
+#' website using an internal function in this package.
+#' @param MB_allocation_file (tibble) ASGS Allocation data. By Default it will draw this from the ABS
+#' website using an internal function in this package.
+#' @param summarise_cols (character vector) This is the columns from the main TB data set you
+#' want to summarise.
+#' @param POA_data (tibble) POA Allocation Data. By Default it will draw this from the ABS
+#' website using an internal function in this package.
+#' @param CED_data (tibble) CED Allocation Data. By Default it will draw this from the ABS
+#' website using an internal function in this package.
+#'
+#' @return (tibble) Returns TB data summarised by CED
+#' @export
+#'
+#' @examples \dontrun {
+#'
+#' MB_pop <-  get_ABS_MB_pop()
+#' MB_allocation_file <- get_abs_region_allocation()
+#'
+#' CED_education <-
+#'     concord_ABS_TB_Education_CED(
+#'     MB_pop = MB_pop,
+#'     MB_allocation_file = MB_allocation_file,
+#'     summarise_cols =
+#'     c("Dwelling", "Person", "Employed, worked full-time",
+#'         "Employed, worked part-time", "Employed, away from work",
+#'           "Unemployed, looking for full-time work", "Unemployed, looking for part-time work",
+#'             "Not in the labour force" , "Not stated" ,"Not applicable"  )
+#'
+#' }
+concord_ABS_TB_LFS_CED <- function(path = "https://raw.githubusercontent.com/nikhilchandra-stats/macrodatasetsraw/refs/heads/master/data/SA1_LFS.csv",
+                                MB_pop = get_ABS_MB_pop(),
+                                POA_data =
+                                  get_abs_region_allocation(geo_type = "POA") ,
+                                CED_data =
+                                  get_abs_region_allocation(geo_type = "CED"),
+                                MB_allocation_file = get_abs_region_allocation(),
+                                summarise_cols =
+                                  c("Dwelling", "Person", "Employed, worked full-time",
+                                    "Employed, worked part-time", "Employed, away from work",
+                                    "Unemployed, looking for full-time work", "Unemployed, looking for part-time work",
+                                    "Not in the labour force" , "Not stated" ,"Not applicable"  )
+) {
+
+  MB_pop_with_SA1 <-
+    MB_pop %>%
+    dplyr::left_join(
+      MB_allocation_file %>% dplyr::distinct(MB_CODE_2021, SA1_CODE_2021)
+    )
+
+  MB_POA_CED_joined_SA1 <- MB_pop_with_SA1 %>%
+    dplyr::left_join(POA_data) %>%
+    dplyr::left_join(CED_data) %>%
+    dplyr::filter(!is.na(POA_CODE_2021)) %>%
+    dplyr::filter(!is.na(CED_NAME_2021))
+
+  dat_temp <-  readr::read_csv(file = path, skip = 9)
+  dat_temp2 <- dat_temp[-1,]
+  dat_temp3 <- dat_temp2[,-c(length(dat_temp2), length(dat_temp2) - 1 )]
+  dat_temp4 <- dat_temp3 %>%
+    dplyr::rename(SA1_CODE_2021 = 1)
 
   MB_POA_CED_joined_SA1_summed <- MB_POA_CED_joined_SA1  %>%
     dplyr::group_by(SA1_CODE_2021, POA_CODE_2021, CED_CODE_2021, CED_NAME_2021, STATE_NAME_2021) %>%
