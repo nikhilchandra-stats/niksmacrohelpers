@@ -39,6 +39,7 @@ get_ABS_MB_pop <- function(url_x =
   return(dat)
 }
 
+
 #' get_WA_CED_redist
 #'
 #' @return (tibble) Tibble of Redistribution
@@ -49,24 +50,31 @@ get_ABS_MB_pop <- function(url_x =
 #' WA_redist <- get_WA_CED_redist()
 #'
 #' }
-get_WA_CED_redist <- function(
-    MB_allocation_file = get_abs_region_allocation()
+get_CED_redist <- function(
+    MB_allocation_file = get_abs_region_allocation(),
+    region_allocation = "NSW electorate"
   ) {
 
-  WA_redist <- get_abs_region_allocation(geo_type = "WA electorate")
-  WA_redist <- WA_redist[,c(1,3,4)]
-  names(WA_redist) <- c("SA1_CODE_2021", "CED_NAME_2021", "SA2_NAME_2021")
-  WA_redist <- WA_redist %>%
-    dplyr::distinct(SA1_CODE_2021, CED_NAME_2021, SA2_NAME_2021)
-  WA_redist_MB_mapped<- MB_allocation_file %>%
-    dplyr::distinct(MB_CODE_2021 , SA2_NAME_2021, STATE_NAME_2021) %>%
-    dplyr::left_join(WA_redist %>%
-                       dplyr::select(-SA1_CODE_2021)
+  redist <- get_abs_region_allocation(geo_type = region_allocation)
+  redist <- redist[,c(1,2,4)]
+  names(redist) <- c("SA1_CODE_2021_join", "CED_NAME_2021", "SA2_NAME_2021")
+  redist <- redist %>%
+    dplyr::distinct(SA1_CODE_2021_join, CED_NAME_2021, SA2_NAME_2021)
+
+
+  redist_MB_mapped<- MB_allocation_file %>%
+    dplyr::distinct(MB_CODE_2021 ,SA1_CODE_2021 ,SA2_NAME_2021, STATE_NAME_2021) %>%
+    dplyr::mutate(
+      SA1_CODE_2021_join =
+        paste0(stringr::str_sub(SA1_CODE_2021, start = 1, end = 1),
+               stringr::str_sub(SA1_CODE_2021, start = 6, end = 11))
+    ) %>%
+    dplyr::left_join(redist
                      ) %>%
     dplyr::filter(!is.na(CED_NAME_2021)) %>%
     dplyr::select(-SA2_NAME_2021)
 
-  return(WA_redist_MB_mapped)
+  return(redist_MB_mapped)
 
 }
 
@@ -140,9 +148,9 @@ concord_CED_POA_by_pop <- function(MB_pop =
 
 }
 
-#' concord_CED_POA_by_pop_WA_redist
+#' concord_CED_POA_by_pop_NSW_redist
 #'
-#' This function will conocord CED to POA using meshblock population but will include the new WA redistribution
+#' This function will conocord CED to POA using meshblock population but will include the new NSW redistribution
 #' All allocation data is downloaded from:
 #' "https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/access-and-downloads/allocation-files/"
 #'
@@ -158,13 +166,15 @@ concord_CED_POA_by_pop <- function(MB_pop =
 #' @export
 #'
 #' @examples
-concord_CED_POA_by_pop_WA_redist <- function(MB_pop =
-                                     get_ABS_MB_pop() ,
-                                   POA_data =
-                                     get_abs_region_allocation(geo_type = "POA") ,
-                                   CED_data =
-                                     get_abs_region_allocation(geo_type = "CED"),
-                                   WA_redist_MB_mapped = get_WA_CED_redist()
+concord_CED_POA_by_pop_redist <- function(MB_pop =
+                                               get_ABS_MB_pop() ,
+                                             POA_data =
+                                               get_abs_region_allocation(geo_type = "POA") ,
+                                             CED_data =
+                                               get_abs_region_allocation(geo_type = "CED"),
+                                             NSW_redist_MB_mapped = get_CED_redist(region_allocation = "NSW electorate"),
+                                             WA_redist_MB_mapped = get_CED_redist(region_allocation = "WA electorate"),
+                                             VIC_redist_MB_mapped = get_CED_redist(region_allocation = "VIC electorate")
 ) {
 
 
@@ -182,6 +192,24 @@ concord_CED_POA_by_pop_WA_redist <- function(MB_pop =
     dplyr::left_join(CED_data) %>%
     dplyr::filter(!is.na(POA_CODE_2021)) %>%
     dplyr::filter(!is.na(CED_NAME_2021))
+
+  NSW_redist_MB_mapped_join <-
+    NSW_redist_MB_mapped %>%
+    dplyr::left_join(MB_pop) %>%
+    dplyr::left_join(POA_data) %>%
+    dplyr::filter(!is.na(POA_CODE_2021))
+
+  WA_redist_MB_mapped_join <-
+    WA_redist_MB_mapped %>%
+    dplyr::left_join(MB_pop) %>%
+    dplyr::left_join(POA_data) %>%
+    dplyr::filter(!is.na(POA_CODE_2021))
+
+  VIC_redist_MB_mapped_join <-
+    VIC_redist_MB_mapped %>%
+    dplyr::left_join(MB_pop) %>%
+    dplyr::left_join(POA_data) %>%
+    dplyr::filter(!is.na(POA_CODE_2021))
 
   MB_POA_CED_Summarised <-
     MB_POA_CED_joined %>%
@@ -205,6 +233,33 @@ concord_CED_POA_by_pop_WA_redist <- function(MB_pop =
     dplyr::mutate(
       POA_Allocation =
         Person/sum(Person, na.rm = T)
+    )
+
+  NSW_redist_MB_mapped_join_summ <-
+    NSW_redist_MB_mapped_join %>%
+    dplyr::group_by(CED_NAME_2021, POA_CODE_2021) %>%
+    dplyr::mutate(dplyr::across(c(Person, Dwelling,  AREA_ALBERS_SQKM), .fns = ~ as.numeric(.))) %>%
+    dplyr::summarise(
+      dplyr::across(
+        c(Person, Dwelling,  AREA_ALBERS_SQKM),
+        .fns = ~ sum(., na.rm = T)
+      )
+    ) %>%
+    dplyr::group_by(CED_NAME_2021) %>%
+    dplyr::mutate(
+      poa_count = dplyr::n()
+    ) %>%
+    dplyr::group_by(POA_CODE_2021) %>%
+    dplyr::mutate(
+      double_counted_POA = dplyr::n()
+    ) %>%
+    dplyr::group_by(POA_CODE_2021) %>%
+    dplyr::mutate(
+      POA_Allocation =
+        Person/sum(Person, na.rm = T)
+    ) %>%
+    dplyr::mutate(
+      STATE_NAME_2021 = "New South Wales"
     )
 
   WA_redist_MB_mapped_join_summ <-
@@ -234,20 +289,54 @@ concord_CED_POA_by_pop_WA_redist <- function(MB_pop =
       STATE_NAME_2021 = "Western Australia"
     )
 
-  WA_redist_MB_mapped_join <-
-    WA_redist_MB_mapped %>%
-    dplyr::left_join(MB_pop) %>%
-    dplyr::left_join(POA_data) %>%
-    dplyr::filter(!is.na(POA_CODE_2021))
+  VIC_redist_MB_mapped_join_summ <-
+    VIC_redist_MB_mapped_join %>%
+    dplyr::group_by(CED_NAME_2021, POA_CODE_2021) %>%
+    dplyr::mutate(dplyr::across(c(Person, Dwelling,  AREA_ALBERS_SQKM), .fns = ~ as.numeric(.))) %>%
+    dplyr::summarise(
+      dplyr::across(
+        c(Person, Dwelling,  AREA_ALBERS_SQKM),
+        .fns = ~ sum(., na.rm = T)
+      )
+    ) %>%
+    dplyr::group_by(CED_NAME_2021) %>%
+    dplyr::mutate(
+      poa_count = dplyr::n()
+    ) %>%
+    dplyr::group_by(POA_CODE_2021) %>%
+    dplyr::mutate(
+      double_counted_POA = dplyr::n()
+    ) %>%
+    dplyr::group_by(POA_CODE_2021) %>%
+    dplyr::mutate(
+      POA_Allocation =
+        Person/sum(Person, na.rm = T)
+    ) %>%
+    dplyr::mutate(
+      STATE_NAME_2021 = "Victoria"
+    )
 
-  MB_POA_CED_Summarised_with_WA <-MB_POA_CED_Summarised %>%
+  existing_codes <- MB_POA_CED_Summarised %>%
+    dplyr::distinct(CED_NAME_2021, CED_CODE_2021)
+
+  MB_POA_CED_Summarised_with_NSW <-MB_POA_CED_Summarised %>%
     dplyr::ungroup() %>%
+    dplyr::filter(STATE_NAME_2021 != "New South Wales") %>%
     dplyr::filter(STATE_NAME_2021 != "Western Australia") %>%
-    dplyr::bind_rows(WA_redist_MB_mapped_join_summ)
+    dplyr::filter(STATE_NAME_2021 != "Victoria") %>%
+    dplyr::bind_rows(NSW_redist_MB_mapped_join_summ) %>%
+    dplyr::bind_rows(WA_redist_MB_mapped_join_summ)%>%
+    dplyr::bind_rows(VIC_redist_MB_mapped_join_summ) %>%
+    dplyr::group_by(CED_NAME_2021) %>%
+    tidyr::fill(CED_CODE_2021, .direction = "updown") %>%
+    dplyr::select(-CED_CODE_2021) %>%
+    dplyr::ungroup() %>%
+    dplyr::left_join(existing_codes)
 
-  return(MB_POA_CED_Summarised_with_WA)
+  return(MB_POA_CED_Summarised_with_NSW)
 
 }
+
 
 #' get_ABS_TB_data_Education
 #'

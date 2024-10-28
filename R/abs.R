@@ -213,6 +213,36 @@ get_abs_region_allocation <- function(geo_type = "SA2") {
 
   }
 
+  if(stringr::str_detect(geo_type, "NSW electorate")) {
+
+    url1 = "https://www.aec.gov.au/redistributions/2023/nsw/final-report/files/NSW-by-SA2-and-SA1.xlsx"
+
+
+    httr::GET(url1, httr::write_disk(tf <- tempfile(fileext = ".xlsx")))
+
+    dat <- readxl::read_excel(tf)
+
+  }
+
+  if(stringr::str_detect(geo_type, "VIC electorate")) {
+
+    url1 = "https://www.aec.gov.au/redistributions/2023/vic/final-report/files/Vic-2024-electoral-divisions-SA1-and-SA2.xlsx"
+
+
+    httr::GET(url1, httr::write_disk(tf <- tempfile(fileext = ".xlsx")))
+
+    dat <- readxl::read_excel(tf)
+
+  }
+
+  if(stringr::str_detect(geo_type, "SA1 7 Digit")) {
+
+    url1 =   "https://raw.githubusercontent.com/nikhilchandra-stats/macrodatasetsraw/refs/heads/master/data/SA1_CODES_WITH_7_DIGIT.csv"
+
+    dat <- readr::read_csv(url1)
+
+  }
+
   return(dat)
 
 }
