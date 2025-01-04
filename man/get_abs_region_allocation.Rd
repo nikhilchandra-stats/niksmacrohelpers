@@ -15,13 +15,31 @@ for LGA.}
 (tibble)
 }
 \description{
-This function plucks concordance files from the ABS website and reads it into
-your global environment.
+All allocation data is downloaded from:
+"https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/access-and-downloads/allocation-files/"
 }
 \examples{
 \dontrun{
 
+#POA data
 post_code_concordances <- get_abs_region_allocation("POA")
+
+#State Electorate Data
+
+POA_data <-
+ get_abs_region_allocation(geo_type = "POA") \%>\%
+ dplyr::distinct(MB_CODE_2021, POA_CODE_2021)
+
+#State Electorate Data
+
+CED_data <-
+ get_abs_region_allocation(geo_type = "CED") \%>\%
+ dplyr::distinct(MB_CODE_2021, CED_CODE_2021, CED_NAME_2021, STATE_NAME_2021)
+
+#State Electorate Data
+SED_data <-
+ get_abs_region_allocation(geo_type = "SED") \%>\%
+ dplyr::distinct(MB_CODE_2021, SED_CODE_2024, SED_NAME_2024, STATE_NAME_2021)
 
 }
 }

@@ -14,3 +14,10 @@ The is function will fetch data from data.gov on PBS expense items. It will
 then clean and join all the data and return data in long form. The data will
 be a timeseries going back to 2014-15 Budget.
 }
+\examples{
+\dontrun{
+
+pbs_data <- get_pbs_line_items()
+
+}
+}
