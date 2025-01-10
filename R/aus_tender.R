@@ -18,7 +18,7 @@
 #' @return (tibble)
 #' @export
 #'
-#' @examples \dontrun {
+#' @examples \dontrun{
 #'
 #' data <- get_aus_tender_data(start_year =2016, wanted_data = "tender extensions")
 #'
@@ -85,12 +85,12 @@ get_aus_tender_data <- function(
 #' @return (tibble) Returns a tibble of extracted information.
 #' @export
 #'
-#' @examples \dontrun {
+#' @examples \dontrun{
 #'
 #' abns <- c("50128382187", "42000001007")
 #'
 #' data <- abns %>%
-#' map_dfr(extract_single_abn_data)
+#'  purrr::map_dfr(extract_single_abn_data)
 #'
 #' }
 extract_single_abn_data <- function(abn = "42000001007") {

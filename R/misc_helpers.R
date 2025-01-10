@@ -24,7 +24,7 @@ days_of_week <- function(abbrev = FALSE){
 #' @export
 #'
 #' @examples \dontrun{
-#' days_week <- days_of_week()
+#' days_week <- months_of_year()
 #' }
 months_of_year <- function(abbrev = FALSE){
 

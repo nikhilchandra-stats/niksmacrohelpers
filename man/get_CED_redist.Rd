@@ -18,7 +18,7 @@ get_WA_CED_redist
 \examples{
 \dontrun{
 
-WA_redist <- get_WA_CED_redist()
+WA_redist <- get_CED_redist()
 
 }
 }

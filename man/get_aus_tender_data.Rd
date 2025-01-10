@@ -29,7 +29,7 @@ webstite.
 Get Aus Tender data from the aus tender website.
 }
 \examples{
-\dontrun {
+\dontrun{
 
 data <- get_aus_tender_data(start_year =2016, wanted_data = "tender extensions")
 

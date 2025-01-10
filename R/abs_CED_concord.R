@@ -47,7 +47,7 @@ get_ABS_MB_pop <- function(url_x =
 #'
 #' @examples \dontrun{
 #'
-#' WA_redist <- get_WA_CED_redist()
+#' WA_redist <- get_CED_redist()
 #'
 #' }
 get_CED_redist <- function(
@@ -360,26 +360,7 @@ concord_CED_POA_by_pop_redist <- function(MB_pop =
 #' @return (tibble) Returns TB data summarised by CED
 #' @export
 #'
-#' @examples \dontrun {
-#'
-#' MB_pop <-  get_ABS_MB_pop()
-#' MB_allocation_file <- get_abs_region_allocation()
-#'
-#' CED_education <-
-#'     concord_ABS_TB_Education_CED(
-#'     MB_pop = MB_pop,
-#'     MB_allocation_file = MB_allocation_file,
-#'     summarise_cols =
-#'           c(
-#'           "Dwelling", "Person", "Bacchelors_and_above",
-#'            "Bacchelors_and_above_summed",
-#'             "Postgraduate Degree Level, nfd" ,
-#'             "Bachelor Degree Level, nfd" , "Higher Doctorate",
-#'             "Professional Specialist Qualification", "Doctoral Degree Level",
-#'             "Master Degree Level, nfd")
-#'         )
-#'
-#' }
+#' @examples
 concord_ABS_TB_Education_CED <- function(path = "https://raw.githubusercontent.com/nikhilchandra-stats/macrodatasetsraw/refs/heads/master/data/SA1_Education.csv",
                                       MB_pop = get_ABS_MB_pop(),
                                       POA_data =
@@ -479,22 +460,7 @@ concord_ABS_TB_Education_CED <- function(path = "https://raw.githubusercontent.c
 #' @return (tibble) Returns TB data summarised by CED
 #' @export
 #'
-#' @examples \dontrun {
-#'
-#' MB_pop <-  get_ABS_MB_pop()
-#' MB_allocation_file <- get_abs_region_allocation()
-#'
-#' CED_education <-
-#'     concord_ABS_TB_Education_CED(
-#'     MB_pop = MB_pop,
-#'     MB_allocation_file = MB_allocation_file,
-#'     summarise_cols =
-#'     c("Dwelling", "Person", "Employed, worked full-time",
-#'         "Employed, worked part-time", "Employed, away from work",
-#'           "Unemployed, looking for full-time work", "Unemployed, looking for part-time work",
-#'             "Not in the labour force" , "Not stated" ,"Not applicable"  )
-#'
-#' }
+#' @examples
 concord_ABS_TB_LFS_CED <- function(path = "https://raw.githubusercontent.com/nikhilchandra-stats/macrodatasetsraw/refs/heads/master/data/SA1_LFS.csv",
                                 MB_pop = get_ABS_MB_pop(),
                                 POA_data =

@@ -17,12 +17,12 @@ from.}
 Go to the ABN website and extract information about a single ABN
 }
 \examples{
-\dontrun {
+\dontrun{
 
 abns <- c("50128382187", "42000001007")
 
 data <- abns \%>\%
-map_dfr(extract_single_abn_data)
+ purrr::map_dfr(extract_single_abn_data)
 
 }
 }

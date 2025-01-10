@@ -14,6 +14,6 @@ Return a vector of months of the year
 }
 \examples{
 \dontrun{
-days_week <- days_of_week()
+days_week <- months_of_year()
 }
 }

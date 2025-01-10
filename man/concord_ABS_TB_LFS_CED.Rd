@@ -45,21 +45,3 @@ Table Builder to CED.The TB data is stored in my Github Repo.
 \details{
 TB = ABS Table Builder
 }
-\examples{
-\dontrun {
-
-MB_pop <-  get_ABS_MB_pop()
-MB_allocation_file <- get_abs_region_allocation()
-
-CED_education <-
-    concord_ABS_TB_Education_CED(
-    MB_pop = MB_pop,
-    MB_allocation_file = MB_allocation_file,
-    summarise_cols =
-    c("Dwelling", "Person", "Employed, worked full-time",
-        "Employed, worked part-time", "Employed, away from work",
-          "Unemployed, looking for full-time work", "Unemployed, looking for part-time work",
-            "Not in the labour force" , "Not stated" ,"Not applicable"  )
-
-}
-}

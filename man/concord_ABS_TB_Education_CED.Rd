@@ -47,25 +47,3 @@ Table Builder to CED.The TB data is stored in my Github Repo.
 \details{
 TB = ABS Table Builder
 }
-\examples{
-\dontrun {
-
-MB_pop <-  get_ABS_MB_pop()
-MB_allocation_file <- get_abs_region_allocation()
-
-CED_education <-
-    concord_ABS_TB_Education_CED(
-    MB_pop = MB_pop,
-    MB_allocation_file = MB_allocation_file,
-    summarise_cols =
-          c(
-          "Dwelling", "Person", "Bacchelors_and_above",
-           "Bacchelors_and_above_summed",
-            "Postgraduate Degree Level, nfd" ,
-            "Bachelor Degree Level, nfd" , "Higher Doctorate",
-            "Professional Specialist Qualification", "Doctoral Degree Level",
-            "Master Degree Level, nfd")
-        )
-
-}
-}
